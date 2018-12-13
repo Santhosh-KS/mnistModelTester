@@ -40,6 +40,7 @@
 #include <Wt/WLength.h>
 
 #include "ClientUi.hpp"
+#include "UrlParser.hpp"
 //#include "TcpClient.hpp"
 //#include "TcpServer.hpp"
 //#include "JsonFileParser.hpp"
@@ -47,14 +48,6 @@
 // GetImageFiles related includes.
 #include <sys/types.h>
 #include <dirent.h>
-/*
-if curl --head --silent --fail ftp://ftp.somewhere.com/bigfile.gz 2> /dev/null;
- then
-   echo "This page exists."
-    else
-      echo "This page does not exist."
-      fi
-      */
 
 int ClientUiApplication::ExecuteCommand(std::string &cmd)
 {
@@ -192,22 +185,24 @@ void ClientUiApplication::OnSearchButtonPressed()
   // little sanity check on the URL.
   //std::string jsonRequst("{\"URL\":\"youtube.com\"}");
   std::string sessId(sessionId());
-  std::cout << "OnSearchButtonPressed\n";
+  //std::cout << "OnSearchButtonPressed\n";
   std::string cmd("curl --head --silent --fail " + url);
   int ret = ExecuteCommand(cmd);
-  std::cout << " command = " << cmd.c_str() << "\n ret = " << ret << "\n";
-  if (url.find(".jpg") != std::string::npos
-      || url.find(".png") != std::string::npos
-      || url.find(".gif") != std::string::npos) {
-    std::cout << "Valid URL\n";
-    root()->removeWidget(MainImageDiv);
-    root()->removeWidget(FooterDiv);
-    MainImageDiv = root()->addWidget(std::make_unique<Wt::WContainerWidget>());
-    SetupImageWindow(MainImageDiv, url);
-    SetupFooter();
+  //std::cout << " command = " << cmd.c_str() << "\n ret = " << ret << "\n";
+  if (ret == 0) {
+    UrlParser parse(url);
+    // Sanity check on the URL
+    if (parse.IsValidUrl()) {
+      std::cout << "Valid URL\n";
+      root()->removeWidget(MainImageDiv);
+      root()->removeWidget(FooterDiv);
+      MainImageDiv = root()->addWidget(std::make_unique<Wt::WContainerWidget>());
+      SetupImageWindow(MainImageDiv, url);
+      SetupFooter();
+    }
   }
   else {
-    Wt::WMessageBox::show("Information", "Please give Valid URL with .jpg or .png or .gif extension.", Wt::StandardButton::Ok);
+    Wt::WMessageBox::show("Information", "Please give Valid URL with .jpg or .jpeg or .png extension.", Wt::StandardButton::Ok);
   }
 
   /*

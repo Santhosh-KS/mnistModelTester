@@ -3,8 +3,8 @@ Project(OnfidoTestProject)
 SET(bin_src src/ClientUi.cpp
             src/main.cpp
             common/src/TcpClient.cpp
-            common/src/TcpServer.cpp)
-            #common/src/JsonFileParser.cpp)
+            common/src/TcpServer.cpp
+            common/src/UrlParser.cpp)
 
 SET(bin_name OnfidoClient)
 SET(rapid_json /opt/rapidjson/include)

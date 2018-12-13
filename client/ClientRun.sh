@@ -25,7 +25,8 @@
 
 cd ./build
 cmake ..
-make clean
+#make clean
 make
+./unitTest
 cd ..
-./build/OnfidoClient --docroot ./ui --http-address 0.0.0.0 --http-port 8080
+#./build/OnfidoClient --docroot ./ui --http-address 0.0.0.0 --http-port 8080
