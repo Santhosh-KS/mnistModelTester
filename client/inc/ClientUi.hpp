@@ -36,26 +36,35 @@
 #include <Wt/WImage.h>
 #include <Wt/WComboBox.h>
 #include <memory>
+#include <vector>
 
 class ClientUiApplication : public Wt::WApplication
 {
 private:
   Wt::WLineEdit *SearchLineEdit;
   Wt::WPushButton *SearchButton;
+  Wt::WPushButton *PredictButton;
   Wt::WContainerWidget *MainSearchDiv;
   Wt::WContainerWidget *FooterDiv;
   Wt::WContainerWidget *MainImageDiv;
+  Wt::WContainerWidget *MainComboDiv;
   Wt::WImage *Image;
   Wt::WComboBox *ModelComboBox;
+  std::vector<std::string> ModelsVector;
   void SetupTheme();
   void SetupHeader();
   void SetupMainBody();
   void SetupImageSearchBar(Wt::WContainerWidget *mainLeft);
   void SetupFooter();
   void SetupImageWindow(Wt::WContainerWidget *mainImgDiv, std::string &url);
+  void SetupComboBox(Wt::WContainerWidget *mainLeft);
   void OnSearchButtonPressed();
+  void OnPredictButtonPressed();
   bool CheckFileExists(std::string &file);
   int ExecuteCommand(std::string &cmd);
+  bool GetModelsFromJson();
+  int GetModelIndex();
+  void ParseResponse(std::string resp);
 public:
   ClientUiApplication(const Wt::WEnvironment& env);
   ~ClientUiApplication();

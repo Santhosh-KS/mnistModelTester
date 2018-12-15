@@ -1,5 +1,0 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.2)
-
-PROJECT(OnfidoMnist)
-INCLUDE(wt.cmake)
-INCLUDE(uTest.cmake)

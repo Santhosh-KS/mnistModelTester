@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/santhosh/onfido/mnistModelTester/dev_test/server/TcpServer.cpp
+iostream
+-
+strings.h
+-
+fstream
+-
+TcpServer.hpp
+/home/santhosh/onfido/mnistModelTester/dev_test/server/TcpServer.hpp
+
+/home/santhosh/onfido/mnistModelTester/dev_test/server/TcpServer.hpp
+unistd.h
+-
+sys/types.h
+-
+sys/socket.h
+-
+netinet/in.h
+-
+arpa/inet.h
+-
+
+/home/santhosh/onfido/mnistModelTester/dev_test/server/main.cpp
+iostream
+-
+string
+-
+TcpServer.hpp
+/home/santhosh/onfido/mnistModelTester/dev_test/server/TcpServer.hpp
+
