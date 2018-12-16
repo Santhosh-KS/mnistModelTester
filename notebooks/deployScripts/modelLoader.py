@@ -8,6 +8,43 @@ import numpy as np
 import cv2
 import json
 
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import Dropout
+from keras.layers import Flatten
+from keras.layers.convolutional import Conv2D
+from keras.layers.convolutional import MaxPooling2D
+from keras.utils import np_utils
+
+def HandleKerasCnnModel(modelPath, testImg):
+  from keras.models import model_from_json
+  import keras
+
+  # load json and create model
+  y = -1
+  file = modelPath + 'cnn_model_test.json'
+  symbolFile = modelPath + 'cnn_model.h5'
+
+  print('json file = {} h5_file = {}'.format(file,symbolFile));
+  
+  json_file = open(file, 'r')
+  loaded_model_json = json_file.read()
+  json_file.close()
+  #loaded_model = model_from_json(loaded_model_json)
+  loaded_model = keras.models.model_from_json(loaded_model_json)
+  
+  # load weights into new model
+  loaded_model.load_weights(symbolFile)
+  print("Loaded model from disk")
+ 
+  # evaluate loaded model on test data
+  loaded_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+  #score = loaded_model.evaluate(X, Y, verbose=0)
+  #score = loaded_model.evaluate(cnn_test_img, cnn_test_lbl, verbose=0)
+  #print("{}: {}".format(loaded_model.metrics_names[1], score[1]*100))
+  y = loaded_model.predict_classes(np.reshape(testImg,(1,28,28,1)))
+  return y
+
 def GetCommandLineArgs():
   parser = ArgumentParser()
   parser.add_argument("-u", "--url", dest="url",
@@ -80,7 +117,6 @@ def processImage(imgFile):
     retArr = np.reshape(img_flat,(1,28*28))
     return retArr
 
-
 def StoreImage(url,saveFile):
   image = io.imread(url)
   cv2.imwrite(saveFile, image)
@@ -88,7 +124,6 @@ def StoreImage(url,saveFile):
 
 def CreateDirectory(path):
   os.makedirs(path, exist_ok=True)
-
 
 def main(argv):
   sessId, url, index = GetCommandLineArgs()
@@ -108,41 +143,42 @@ def main(argv):
   print('path respJsonFile = {}'.format(respJsonFile))
 
   '''
-  Saving an image is an over head and computationally expensive operation.
-  To keep the logic simple we are making this compromise.
+  Saving an image is an overhead and computationally expensive operation.
+  But, to keep the logic simple we are making this compromise.
   Images availabe in the internet are of different format say,
   RGB,BGR,GRASCALE,HUV 3 or 4 channel etc. Trying
   to put a code to handle all these formats of data will blowup the code  complexity.
   Hence irrespective of the image format, we just
   store it and read it as grayscale image. As MNIST data set or text
   image data doesn't carry any information with the color. 
-  So reading the image as grayscale format is perfectly logical.
+  So storing and then reading the image as grayscale format is a fair compromise.
   '''
   response = {}
-  
   response['SessionId'] = sessId
-
-  StoreImage(url,saveImgFile)
-  arr = processImage(saveImgFile)
-  
   pklFiles = ['logistic_regression_model_default.pkl', 'knn_model_K_3.pkl',
               'cnn_model_tobe_put_in']
-
   index = int(index)
+  
+  StoreImage(url,saveImgFile)
+  arr = processImage(saveImgFile)
+  modelPath = '/opt/onfido/models/'
 
-  if index <= 2 :
-    modelFile = '/opt/onfido/models/' + pklFiles[index]
+  if index > -1  and index < 3 :
+    modelFile = modelPath + pklFiles[index]
 
     if arr.size == 0:
       print('Problem with the image file : {}'.format(saveImgFile))
       response['Status'] = '500 OK'
       response['Prediction'] = -1
     else:
-      res = predict(modelFile, arr)
+      
+      if index == 2 :
+        res = HandleKerasCnnModel(modelPath, arr)
+      else :
+        res = predict(modelFile, arr)
       print ('prediction is = {}'.format(res))
       response['Status'] = '200 OK'
       response['Prediction'] = int(res)
-
   else:
       response['Status'] = '300 OK'
       response['Prediction'] = -1
