@@ -25,7 +25,7 @@
 
 cd ./build
 cmake ..
-#make clean
+make clean
 make
 ./unitTest
 cd ..

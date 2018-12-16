@@ -355,6 +355,7 @@ bool ClientUiApplication::GetModelsFromJson()
   }
 }
 
+
 ClientUiApplication::ClientUiApplication(const Wt::WEnvironment& env)
   : WApplication(env)
 {

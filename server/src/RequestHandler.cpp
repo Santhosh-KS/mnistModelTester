@@ -1,8 +1,33 @@
+/*
+   MIT License
+
+   Copyright (c) 2018 santhoshachar08@gmail.com
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included in all
+   copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+*/
+
+
+
 #include "RequestHandler.hpp"
 #include "JsonStringParser.hpp"
 #include "JsonFileParser.hpp"
-
-#include <memory>
+#include <iostream>
 
 RequestHandler::RequestHandler(std::string &modelFile, std::string &respFile):
   ModelFile(modelFile),
@@ -16,6 +41,14 @@ RequestHandler::~RequestHandler()
   // Empty.
 }
 
+
+// We read the "/opt/onfido/Models.json" file
+// and extract the available model information.
+// {
+//   "Models": ["Logistic Regression", "K-Nearest Neighbours", "CNN"]
+// }
+// This will help us change/modify/add the new models dynamically,
+// without re-compiling the code.
 bool RequestHandler::GetSupportedModels()
 {
   JsonFileParser parser(ModelFile);
@@ -26,42 +59,57 @@ bool RequestHandler::GetSupportedModels()
   return ModelsVector.empty();
 }
 
-std::string RequestHandler::CreateResponse(ResponseElements &elements)
-{
-  std::string sessIdKey("SessionId");
-  std::string statusKey("Status");
-  std::string predKey("Prediction");
-
-  JsonFileParser parser(RespTemplateFile);
-  parser.SetString(sessIdKey, elements.SessionId);
-  parser.SetString(statusKey, elements.StatusCode);
-  parser.SetUInt64(predKey, elements.PredictionValue);
-
-  return parser.GetStrigifiedJson();
-}
-
-std::string RequestHandler::ProcessRequest(std::string req)
+// We will read the request message sent by client.
+// Request message will have the json format as shown below.
+// {
+//  "SessionId": "abcd1234",
+//  "ImageUrl": "http://someimage.jpg",
+//  "ModelId": 1234
+// }
+// same template should be found in "/opt/onfido/Request.json"
+RequestHandler::RequestElements
+RequestHandler::ReadRequest(std::string &req)
 {
   std::string sessIdKey("SessionId");
   std::string modelIdKey("ModelId");
   std::string imgUrlKey("ImageUrl");
 
-  std::unique_ptr<JsonStringParser> reqParser =  std::make_unique<JsonStringParser>(req);
+  JsonStringParser reqParser(req);
+  RequestHandler::RequestElements elements;
+  elements.SessionId = reqParser.GetString(sessIdKey);
+  elements.ImageUrl = reqParser.GetString(imgUrlKey);
+  elements.ModelId = reqParser.GetUInt64(modelIdKey);
 
-  std::string sessId(reqParser->GetString(sessIdKey));
-  std::string imgUrl(reqParser->GetString(imgUrlKey));
-  uint64_t modelId(reqParser->GetUInt64(modelIdKey));
+  return elements;
+}
 
-  ResponseElements elements;
-  elements.SessionId = sessId;
-  elements.StatusCode = "200 OK";
-  elements.PredictionValue = 9;
-  return CreateResponse(elements);
-  /*
-  if (modelId > ModelsVector.size()) {
+std::string RequestHandler::ResponseCreator(std::string &sessionId)
+{
+  std::string file("/tmp/onfido/");
+  file += sessionId + "/response.json";
+
+  JsonFileParser parser(file);
+  return parser.GetStrigifiedJson();
+}
+
+std::string RequestHandler::ProcessRequest(std::string &req)
+{
+  RequestHandler::RequestElements reqElements = ReadRequest(req);
+
+  if (reqElements.ModelId > ModelsVector.size()) {
     // Models.json file mismatch.
   }
   else {
+    std::string python("python");
+    std::string modelScript("/opt/onfido/scripts/modelLoader.py");
+    std::string cliOptions(" -u ");
+    cliOptions += reqElements.ImageUrl + " -i " +
+      std::to_string(reqElements.ModelId) + " -s " + reqElements.SessionId;
+    std::string cmd("");
+    std::string space(" ");
+    cmd = python + space + modelScript + space + cliOptions;
+    std::cout << "Ready to rock: " << cmd.c_str() << "\n";
+    CmdUtil.ExecuteCommand(cmd);
   }
-  */
+  return ResponseCreator(reqElements.SessionId);
 }
