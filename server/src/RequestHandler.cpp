@@ -42,7 +42,7 @@ RequestHandler::~RequestHandler()
 }
 
 
-// We read the "/opt/onfido/Models.json" file
+// We read the "/opt/onfido/data/Models.json" file
 // and extract the available model information.
 // {
 //   "Models": ["Logistic Regression", "K-Nearest Neighbours", "CNN"]
@@ -66,7 +66,7 @@ bool RequestHandler::GetSupportedModels()
 //  "ImageUrl": "http://someimage.jpg",
 //  "ModelId": 1234
 // }
-// same template should be found in "/opt/onfido/Request.json"
+// same template should be found in "/opt/onfido/data/Request.json"
 RequestHandler::RequestElements
 RequestHandler::ReadRequest(std::string &req)
 {

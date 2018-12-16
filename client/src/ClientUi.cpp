@@ -57,22 +57,6 @@ int ClientUiApplication::ExecuteCommand(std::string &cmd)
   return ret;
 }
 
-/*
-bool ClientUiApplication::CheckFileExists(std::string &file)
-{
-  struct stat buffer;
-  bool val(false);
-  if ((stat(file.c_str(), &buffer) == 0)) {
-    val = true;
-    std::cout << "File " << file.c_str() << " Found.\n";
-  }
-  else {
-    std::cout << "File " << file.c_str() << " Not Found.\n";
-  }
-  return val;
-}
-*/
-
 // Sets up the theme. Wt supports Bootstap (https://getbootstrap.com/)
 // Setup Wt to use Boosstrap 3.
 void ClientUiApplication::SetupTheme()
@@ -191,7 +175,7 @@ void ClientUiApplication::OnPredictButtonPressed()
 {
   std::string serverIp("localhost");
   int port(5678);
-  std::string jsonFile("/opt/onfido/Request.json");
+  std::string jsonFile("/opt/onfido/data/Request.json");
   std::string sessIdKey("SessionId");
 
   JsonFileParser parser(jsonFile);
@@ -341,7 +325,7 @@ void ClientUiApplication::OnSearchButtonPressed()
 // and stores the model's name present in the json file in to a vector.
 bool ClientUiApplication::GetModelsFromJson()
 {
-  JsonFileParser parser("/opt/onfido/Models.json");
+  JsonFileParser parser("/opt/onfido/data/Models.json");
   std::string key("Models");
   if (parser.IsArray(key)) {
     ModelsVector = parser.GetArrayString(key);

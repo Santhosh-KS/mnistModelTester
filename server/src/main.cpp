@@ -35,8 +35,8 @@ int main(int argc, char** argv)
   int port(5678);
   TcpServer server(port);
   std::cout << "Server Listening on port: " << port << "\n";
-  std::string modleFile("/opt/onfido/Models.json");
-  std::string respTemplateFile("/opt/onfido/Response.json");
+  std::string modleFile("/opt/onfido/data/Models.json");
+  std::string respTemplateFile("/opt/onfido/data/Response.json");
   RequestHandler handler(modleFile, respTemplateFile);
   while (true) {
     server.Accept();

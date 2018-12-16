@@ -33,7 +33,7 @@ std::string TcpServer::ReadFile()
 {
   std::string msg;
   std::string line;
-  std::string file("/opt/onfido/Response.json");
+  std::string file("/opt/onfido/data/Response.json");
   std::ifstream infile(file);
   while (std::getline(infile, line)) {
     //std::cout << "New line" << line.c_str() << "\n";
