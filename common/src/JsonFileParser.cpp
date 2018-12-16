@@ -100,7 +100,7 @@ std::string JsonFileParser::GetStrigifiedJson()
   rapidjson::StringBuffer sb;
   rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
   Jdoc.Accept(writer);    // Accept() traverses the DOM and generates Handler events.
-  std::cout << "stringify : " << sb.GetString() << "\n";
+  //std::cout << "stringify : " << sb.GetString() << "\n";
   return sb.GetString();
 }
 
