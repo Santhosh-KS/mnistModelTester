@@ -3,6 +3,7 @@
 
 #include "rapidjson/document.h"
 #include "NotCopyable.hpp"
+#include "rapidjson/prettywriter.h"
 
 class  JsonStringParser: public NotCopyable
 {
@@ -14,6 +15,9 @@ class  JsonStringParser: public NotCopyable
     ~JsonStringParser();
     std::string GetString(std::string key);
     uint64_t GetUInt64(std::string key);
+    bool SetInt(std::string key, uint64_t val);
+    bool SetString(std::string key, std::string val);
+    std::string GetStrigifiedJson();
 };
 
 #endif // JSON_STRING_PARSER_HPP

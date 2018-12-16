@@ -46,7 +46,11 @@ class TcpServer {
   public:
     TcpServer(int port);
     ~TcpServer();
-    void Run();
+    // void Run();
+    void Accept();
+    std::string Read();
+    void Send(std::string &str);
+    void Close();
 };
 
 #endif // TCP_SERVER_HPP

@@ -153,29 +153,38 @@ void ClientUiApplication::ParseResponse(std::string resp)
 
   //std::string dummy("{}");
   std::cout << " resp = " << resp.c_str() << "\n";
-  std::unique_ptr<JsonStringParser> respParser =  std::make_unique<JsonStringParser>(resp);;
-  //respParser = std::make_unique<JsonStringParser>(resp);
-  std::cout << " It is fine here\n";
-  std::string sessId(respParser->GetString(sessIdKey));
-  std::string status(respParser->GetString(statusKey));
-  uint64_t prediction(respParser->GetUInt64(predKey));
-//  if (sessId.compare(sessionId()) == 0) {
-    if (status.compare("200 OK") == 0) {
-      if ( prediction < 10) {
-        std::string msg = "Predicted value = " + std::to_string(prediction);
-        Wt::WMessageBox::show("Information", msg.c_str() , Wt::StandardButton::Ok);
+  std::string err("ERROR");
+  // Handle the error when connection to TCP socket is having some problem.
+  if(resp.find(err) != std::string::npos) {
+    Wt::WMessageBox::show("Information", resp.c_str(), Wt::StandardButton::Ok);
+    return;
+  }
+  else {
+    std::unique_ptr<JsonStringParser> respParser =  std::make_unique<JsonStringParser>(resp);;
+    std::string sessId(respParser->GetString(sessIdKey));
+    std::string status(respParser->GetString(statusKey));
+    uint64_t prediction(respParser->GetUInt64(predKey));
+   if (sessId.compare(sessionId()) == 0) {
+      if (status.compare("200 OK") == 0) {
+        if ( prediction < 10) {
+          std::string msg = "Predicted value = " + std::to_string(prediction);
+          Wt::WMessageBox::show("Information", msg.c_str() , Wt::StandardButton::Ok);
+        }
+        else {
+          std::string msg("Invaid prediction by the selected model");
+          Wt::WMessageBox::show("Information", msg.c_str(), Wt::StandardButton::Ok);
+        }
       }
       else {
-        Wt::WMessageBox::show("Information", "Invalid Prediction" , Wt::StandardButton::Ok);
+        std::string msg("Got Status ");
+        msg += status + " from server";
+        Wt::WMessageBox::show("Information", msg.c_str(), Wt::StandardButton::Ok);
       }
     }
     else {
-      Wt::WMessageBox::show("Information", "Status not ok!" , Wt::StandardButton::Ok);
+      Wt::WMessageBox::show("Information", "Invalid Session ID." , Wt::StandardButton::Ok);
     }
- // }
-/*  else {
-    Wt::WMessageBox::show("Information", "Invalid Session ID." , Wt::StandardButton::Ok);
-  }*/
+  }
 }
 
 void ClientUiApplication::OnPredictButtonPressed()
@@ -190,11 +199,14 @@ void ClientUiApplication::OnPredictButtonPressed()
 
   std::string sessIdVal(sessionId());
   std::string modelIdKey("ModelId");
+  std::string imgUrlKey("ImageUrl");
 
   int modelIndex(GetModelIndex());
 
   if (modelIndex >= 0 ) {
+    auto url(SearchLineEdit->text().toUTF8());
     parser.SetString(sessIdKey, sessIdVal);
+    parser.SetString(imgUrlKey, url);
     if (parser.SetUInt64(modelIdKey, modelIndex)) {
       std::string req(parser.GetStrigifiedJson());
       std::string resp(client.Connect(req));

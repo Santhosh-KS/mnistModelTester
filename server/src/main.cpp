@@ -28,15 +28,31 @@
 #include <string>
 
 #include "TcpServer.hpp"
+#include "RequestHandler.hpp"
 
 int main(int argc, char** argv)
 {
-  if (argc != 2) {
-    std::cout << "Usage: ./server <port>\n";
-    return -1;
+  /*
+     if (argc != 2) {
+     std::cout << "Usage: ./server <port>\n";
+     return -1;
+     }
+     std::string port(argv[1]);
+     TcpServer server(std::stoi(port));
+     server.Run();
+     return 0;
+  */
+  int port(5678);
+  TcpServer server(port);
+  std::cout << "Server Listening on port: " << port << "\n";
+  std::string modleFile("/opt/onfido/Models.json");
+  std::string respTemplateFile("/opt/onfido/Response.json");
+  RequestHandler handler(modleFile, respTemplateFile);
+  while (true) {
+    server.Accept();
+    std::string jsonRequest = server.Read();
+    std::string replay(handler.ProcessRequest(jsonRequest));
+    server.Send(replay);
   }
-  std::string port(argv[1]);
-  TcpServer server(std::stoi(port));
-  server.Run();
-  return 0;
+  server.Close();
 }

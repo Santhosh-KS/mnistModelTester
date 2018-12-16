@@ -52,26 +52,25 @@ TcpServer::TcpServer(int port):
 
 TcpServer::~TcpServer()
 {
-  close(ConnectionSockFd);
-  close(SocketFd);
+  Close();
 }
-
+#if 0
 void TcpServer::Run()
 {
-  while(1) {
+  //while(1) {
     ConnectionSockFd  = accept(SocketFd,
         (struct sockaddr *) &ClientAddress, &ClientLen);
     if (ConnectionSockFd < 0) {
       //error("ERROR on accept");
       std::cout << "ERROR on accept\n";
-      continue;
+     // continue;
     }
     std::cout << "Server: Got Connection from "
       <<  inet_ntoa(ClientAddress.sin_addr)
       << " on port " << ntohs(ClientAddress.sin_port) << "\n";
 
+    /*
     send(ConnectionSockFd, "200 OK\n", 6, 0);
-
     bzero(Buffer,sizeof(Buffer));
 
     int n = read(ConnectionSockFd, Buffer, sizeof(Buffer));
@@ -80,7 +79,44 @@ void TcpServer::Run()
       continue;
     }
     std::cout << "Here is the Message: " << Buffer << "\n";
+    */
+  //}
+  //close(ConnectionSockFd);
+  //close(SocketFd);
+}
+#endif
+void TcpServer::Accept()
+{
+  ConnectionSockFd  = accept(SocketFd,
+      (struct sockaddr *) &ClientAddress, &ClientLen);
+  if (ConnectionSockFd < 0) {
+    std::cout << "ERROR on accept\n";
   }
+  std::cout << "Server: Got Connection from "
+    <<  inet_ntoa(ClientAddress.sin_addr)
+    << " on port " << ntohs(ClientAddress.sin_port) << "\n";
+}
+
+std::string TcpServer::Read()
+{
+  bzero(Buffer,sizeof(Buffer));
+  int n = read(ConnectionSockFd, Buffer, sizeof(Buffer));
+  if (n < 0)  {
+    std::cerr << "ERROR reading from socket\n";
+    return std::string("");
+  }
+  std::cout << "Here is the Message: " << Buffer << "\n";
+  return std::string(Buffer);
+}
+
+void TcpServer::Send(std::string &str)
+{
+  send(ConnectionSockFd, str.c_str(), str.length(), 0);
+  return;
+}
+
+void TcpServer::Close()
+{
   close(ConnectionSockFd);
   close(SocketFd);
 }
