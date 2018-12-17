@@ -65,6 +65,8 @@ private:
   bool GetModelsFromJson();
   int GetModelIndex();
   void ParseResponse(std::string resp);
+  void SetupComboSelection(Wt::WContainerWidget *mainLeft);
+  void OnComboButtonClicked();
 public:
   ClientUiApplication(const Wt::WEnvironment& env);
   ~ClientUiApplication();

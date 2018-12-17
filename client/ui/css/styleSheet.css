@@ -164,3 +164,13 @@ top: 50%;
 -ms-transform: translateY(-50%);
 transform: translateY(-50%);
 }
+
+.input {
+  margin: 5px;
+}
+
+#notify {
+  background-color: black;
+  font-size: 110%;
+  color: #ffffff;
+}

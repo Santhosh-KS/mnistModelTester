@@ -6,7 +6,8 @@ SET(bin_src client/src/ClientUi.cpp
             ../common/src/TcpServer.cpp
             ../common/src/UrlParser.cpp
             ../common/src/JsonFileParser.cpp
-            ../common/src/JsonStringParser.cpp)
+            ../common/src/JsonStringParser.cpp
+            ../common/src/Utils.cpp)
 
 SET(bin_name OnfidoClient)
 SET(rapid_json /opt/rapidjson/include)
