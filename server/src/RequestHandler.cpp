@@ -66,7 +66,7 @@ bool RequestHandler::GetSupportedModels()
 //  "ImageUrl": "http://someimage.jpg",
 //  "ModelId": 1234
 // }
-// same template should be found in "/opt/onfido/data/Request.json"
+// same template should be present in "/opt/onfido/data/Request.json"
 RequestHandler::RequestElements
 RequestHandler::ReadRequest(std::string &req)
 {

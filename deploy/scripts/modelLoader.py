@@ -142,6 +142,13 @@ def main(argv):
   print('path imgfile = {}'.format(saveImgFile))
   print('path respJsonFile = {}'.format(respJsonFile))
 
+  response = {}
+  response['SessionId'] = sessId
+  pklFiles = ['logistic_regression_model_default.pkl', 'knn_model_K_3.pkl',
+              'cnn_model_tobe_put_in']
+  index = int(index)
+ 
+
   '''
   Saving an image is an overhead and computationally expensive operation.
   But, to keep the logic simple we are making this compromise.
@@ -153,12 +160,7 @@ def main(argv):
   image data doesn't carry any information with the color. 
   So storing and then reading the image as grayscale format is a fair compromise.
   '''
-  response = {}
-  response['SessionId'] = sessId
-  pklFiles = ['logistic_regression_model_default.pkl', 'knn_model_K_3.pkl',
-              'cnn_model_tobe_put_in']
-  index = int(index)
-  
+ 
   StoreImage(url,saveImgFile)
   arr = processImage(saveImgFile)
   modelPath = '/opt/onfido/models/'
