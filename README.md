@@ -1,5 +1,3 @@
-# mnistModelTester
-
 # Software Installation Guide
 
 ## Install dependencies
@@ -34,5 +32,11 @@ you need to create a softlink under **mnistModelTester/client/ui/** a link to Wt
 - `cd mnistModelTester/client/ui/`
 - `ln -s /opt/Wt4.0.4/resources resources`
 
+Copy the mnistModelTester/deploy/data , mnistModelTester/deploy/models and mnistModelTest/deploy/scripts in to /opt/onfido directory.
+
+- `cp -r mnistModelTester/deploy/* /opt/onfido`
+
 
 If you want to change the IP or port number. Feel free to have a look at the **ClientRun.sh** file and modify as required.
+
+There will be Three binaries will be built viz **OnfidoClient, OnfidoServer and unitTest**. You can selectively enable or disable their build by commenting the respective **xyz.cmake** in CMakeList.txt file
